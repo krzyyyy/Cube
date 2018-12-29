@@ -1,4 +1,5 @@
 
+#include "stdafx.h"
 #include "Model.h"
 
 Model::Model(){}
@@ -26,6 +27,7 @@ Model::Model(vector <Mat> imgs):images(imgs), band({ -100, 100 }),
 		}
 	corner_points = vector<Vec2f>({ Vec2f(0,0),Vec2f(images[0].cols,0),// wierzcholki obrazow
 		Vec2f(0,images[0].rows),Vec2f(images[0].cols,images[0].rows) });
+	namedWindow("okno", WINDOW_NORMAL);
 }
 void Model::key_handling(int sign) {
 	if (sign == 'p'&&trans[2]<-400)
@@ -44,4 +46,65 @@ void Model::key_handling(int sign) {
 		rot_vec[1] = -0.01;
 	else if (sign == 'd')
 		rot_vec[2] = -0.01;
+}
+void Model::mul() {
+	rot_mat = Mat();
+	Rodrigues(rot_vec, rot_mat);
+	vector<Vec3f> out(0);
+	for (auto pt : points_3d)
+		out.push_back(Vec3f(((float*)Mat(rot_mat*Mat(pt)).data)));
+	points_3d = out;
+	rot_vec = Vec3f(0, 0, 0);
+}
+void Model::mean() {
+	vector<Vec3f> out(0);
+	for (auto x : id_img_points) {
+		Vec3f sum(0, 0, 0);
+		for (auto id : x) {
+			sum += points_3d[id];
+		}
+		sum /= 4;
+		out.push_back(sum);
+	}
+	points_mean_3d = out;
+}
+void Model::visiable_walls() {
+	projectPoints(points_3d, Vec3f(0, 0, 0), trans, camera_matrix, dist_coeffs, points_2d);
+	projectPoints(points_mean_3d, Vec3f(0, 0, 0), trans, camera_matrix, dist_coeffs, points_mean_2d);
+	indexes_good = vector<size_t>(0);// indeksy scian ktore bêd¹ wyœwietlane
+	vector <size_t> indexes_of_id({ 0, 1, 2, 3, 4, 5 });// indeksy scian
+	sort(indexes_of_id.begin(), indexes_of_id.end(),//sortowanie indeksow scian na podstawie skladowej Z srodkow tych scian
+		[this](size_t a, size_t b) {return points_mean_3d[a][2]>points_mean_3d[b][2]; });
+	id_img_points_good.clear();
+	//Wybieranie scian do wyswietlenia tak ze srodki tych scian na obrazie 2d nie zawieraja sie
+	//wewnatrz blizszej sciany( tj. takiej dla ktorej skladowa Z srodka ma wieksza wartosc)
+	for (auto id : indexes_of_id) {
+		bool if_internal = false;
+		for (auto pts : id_img_points_good) {
+			vector <Vec2f> area(4), area2(0);
+			generate(area.begin(), area.end(), [pts, n = 0, this]()mutable{return points_2d[pts[n++]]; });
+			convexHull(area, area2);
+			if (pointPolygonTest(area2, points_mean_2d[id], false) >= 0)
+				if_internal = true;
+		}
+		if (if_internal == false) {
+			id_img_points_good.push_back(id_img_points[id]);
+			indexes_good.push_back(id);
+		}
+	}
+}
+unsigned int Model::dysplay() {
+	Mat img(400, 400, CV_8UC3, Scalar(0, 0, 0));
+	for (auto id : indexes_good) {// wyswietlanie widocznych obrazow
+		vector <Vec2f> wall_points(4);
+		generate(wall_points.begin(), wall_points.end(),//generowanie punktow 2d
+			[id, n = 0, this]()mutable{return points_2d[id_img_points[id][n++]] + Vec2f(200, 200); });
+		Mat mat_transf = getPerspectiveTransform(corner_points, wall_points);//obliczanie macierzy transformacji
+		Mat temp;
+		warpPerspective(images[id], temp, mat_transf, Size(img.rows, img.cols));//transformacja obrazu
+		add(temp, img, img);
+
+	}
+	imshow("okno", img);
+	return waitKey(0);
 }

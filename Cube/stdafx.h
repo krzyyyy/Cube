@@ -4,11 +4,11 @@
 //
 
 #pragma once
-
+#include <iostream>
+#include <opencv2/opencv.hpp>
+#include <vector>
 #include "targetver.h"
 
-#include <stdio.h>
-#include <tchar.h>
 
 
 

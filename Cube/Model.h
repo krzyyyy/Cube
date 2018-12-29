@@ -21,10 +21,14 @@ private:
 	Mat rot_mat;
 	Vec3f rot_vec;
 	vector <Vec2f> corner_points;
+	vector <size_t> indexes_good;
 public:
 	Model();
 	Model(vector <Mat> imgs);
 	void key_handling(int sign);
-
+	void mul();
+	void mean();
+	void visiable_walls();
+	unsigned int dysplay();
 };
 
