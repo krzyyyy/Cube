@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "Model.h"
+#include "Reader.h"
 
 
 
@@ -13,13 +14,11 @@ using namespace cv;
 //funkcje kolejno rotacji punktów 3d, obliczania œrodkow ka¿dej ze scian i obslugi przyciskow
 int main() {
 	Model m1;
+	Reader rd("configuration.txt");
 	vector <Mat> images;
+	rd.load(images);
 	unsigned int sign=0;
-	for (int i = 1; i < 7; i++) { // wczytywanie obrazow
-		stringstream name;
-		name << i;
-		images.push_back(imread("images/" + name.str() + ".png"));
-	}
+	
 	m1 = Model(images);
 	while (sign != 27) {
 		m1.key_handling(sign);
