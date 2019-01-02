@@ -1,6 +1,7 @@
-images/opencv.png
-images/1.png
-images/2.png
+images/opencv.png thresholding
+images/testImage.png gauss
+images/leo.jpg thresholding
+images/2.png gauss
 images/3.png
 images/4.png
 images/5.png

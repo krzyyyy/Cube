@@ -12,11 +12,25 @@
 using namespace std;
 using namespace cv;
 //funkcje kolejno rotacji punktów 3d, obliczania œrodkow ka¿dej ze scian i obslugi przyciskow
+void dysplay(vector <Mat> imgs) {
+	namedWindow("win", WINDOW_NORMAL);
+	for (auto &img : imgs) {
+		imshow("win", img);
+		waitKey(0);
+	}
+}
+
 int main() {
 	Model m1;
-	Reader rd("configuration.txt");
 	vector <Mat> images;
-	rd.load(images);
+	try {
+		Reader rd("configuration.txt");
+		rd.load(images);
+	}
+	catch (string a) {
+		cout << a << endl;
+	}
+	dysplay(images);
 	unsigned int sign=0;
 	
 	m1 = Model(images);

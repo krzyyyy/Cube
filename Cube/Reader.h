@@ -14,8 +14,7 @@ public:
 
 private:
 	fstream file;
-	void gaus(Mat &imgIn, Mat &imgOut );
-
-
+	void gauss(Mat &imgIn, Mat &imgOut );
+	void thresholding(Mat &imgIn, Mat &imgOut);
 };
 

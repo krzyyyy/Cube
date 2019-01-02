@@ -17,9 +17,14 @@ void Reader::load(vector <Mat>& images) {
 		stringstream ss(line);
 		ss >> path >> mode;
 		Mat temp = imread(path);
-		gaus(temp, temp);
 		if (temp.empty())
 			throw "imageFileException";
+		else if (mode == "gauss")
+			gauss(temp, temp);
+		else if (mode == "thresholding")
+			thresholding(temp, temp);
+		else if (mode != "")
+			throw "imageModeException";
 		images.push_back(temp);
 
 	}
@@ -27,9 +32,8 @@ void Reader::load(vector <Mat>& images) {
 Reader::~Reader() {
 	file.close();
 }
-void Reader::gaus(Mat &imgIn, Mat &imgOut) {
+void Reader::gauss(Mat &imgIn, Mat &imgOut) {
 	imgIn.copyTo(imgOut);
-	namedWindow("o", WINDOW_NORMAL);
 	Mat temp(imgIn.rows + 2, imgIn.cols + 2, imgIn.type());
 	imgIn.copyTo(temp(Rect(1, 1, imgIn.cols, imgIn.rows)));
 	Mat mask = (Mat_<double>(3, 3) << 1, 2, 1, 2, 4, 2, 1, 2, 1);
@@ -63,7 +67,6 @@ void Reader::gaus(Mat &imgIn, Mat &imgOut) {
 						sum1 += _Itemp(i + 1 + k, j + 1 + l)[0] * mask.at<double>(k + 1, l + 1);
 						sum2 += _Itemp(i + 1 + k, j + 1 + l)[1] * mask.at<double>(k + 1, l + 1);
 						sum3 += _Itemp(i + 1 + k, j + 1 + l)[2] * mask.at<double>(k + 1, l + 1);
-
 					}
 				sum1 /= 16;
 				sum2 /= 16;
@@ -74,10 +77,46 @@ void Reader::gaus(Mat &imgIn, Mat &imgOut) {
 			}
 		imgOut = _I;
 		break;
-	}
+		}
 	}
 
-	imshow("o", imgOut);
-	waitKey(0);
 
+}
+void Reader::thresholding(Mat &imgIn, Mat &imgOut) {
+	imgIn.copyTo(imgOut);
+	//imgOut = Mat(imgIn.cols, imgIn.rows, imgIn.type(), Scalar(0, 0, 0));
+	switch (imgIn.channels())
+	{
+	case 1:
+	{
+		for (int i = 0; i<imgIn.rows; i++)
+			for (int j = 0; j < imgIn.cols; j++) {
+				int pix = 0;
+				if (imgIn.at<uchar>(i, j) <= 128)
+					pix = 0;
+				else
+					pix = 255;
+				imgOut.at<uchar>(i, j) = pix;
+			}
+
+		break;
+	}
+	case 3:
+	{
+		Mat_<Vec3b> _I = imgIn;
+		for (int i = 0; i<imgIn.rows; i++)
+			for (int j = 0; j < imgIn.cols; j++) {
+				for (int idx = 0; idx < 3; idx++) {
+					double pix = 0;
+					if (_I(i, j)[idx] <= 80)
+						pix = 0;
+					else
+						pix = 255;
+					_I(i, j)[idx] = pix;
+				}
+			}
+		imgOut = _I;
+		break;
+	}
+	}
 }
