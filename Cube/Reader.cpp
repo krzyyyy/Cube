@@ -1,32 +1,37 @@
 
 #include "stdafx.h"
 #include "Reader.h"
+#include "Exceptions.h"
 
 Reader::Reader() {
 }
 Reader::Reader(string path) {
 	file.open(path, ios::in);
+	//position = file.tellg();
 	if (!file.good()) 
 		throw "configurationFileException";
+	linefile = 1;
 }
 void Reader::load(vector <Mat>& images) {
 	images.clear();
+
 	while (!file.eof()) {
 		string line, path, mode;
 		getline(file, line);
 		stringstream ss(line);
 		ss >> path >> mode;
 		Mat temp = imread(path);
-		if (temp.empty())
-			throw "imageFileException";
+		if (temp.empty()) {
+			throw ImageFileException(linefile, path);
+		}
 		else if (mode == "gauss")
 			gauss(temp, temp);
 		else if (mode == "thresholding")
 			thresholding(temp, temp);
 		else if (mode != "")
-			throw "imageModeException";
+			throw ImageModeException(linefile, mode);
 		images.push_back(temp);
-
+		linefile++;
 	}
 }
 Reader::~Reader() {
@@ -119,4 +124,19 @@ void Reader::thresholding(Mat &imgIn, Mat &imgOut) {
 		break;
 	}
 	}
+}
+bool Reader::makeFoto(vector <Mat> &images) {
+	VideoCapture cap(0);
+	if (!cap.isOpened())
+		return false;
+	Mat frame;
+	while (true) {
+		cap >> frame;
+		imshow("foto", frame);
+		if (waitKey(10) == 'f')
+			break;
+
+	}
+	images.push_back(frame);
+	return true;
 }

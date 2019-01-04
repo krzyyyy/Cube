@@ -156,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="stdafx.cpp">

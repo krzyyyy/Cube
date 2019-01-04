@@ -6,35 +6,33 @@ using namespace cv;
 class ErrorLoger {
 private:
 	static string errorlog;
-public:
-	string getLog();
-	void addLog(string log);
-};
-void ErrorLoger::addLog(string log) {
-	errorlog += log;
-}
-string ErrorLoger::getLog() {
-	return errorlog;
-}
-class ImageFileException :protected ErrorLoger{
-private:
 	string message;
+	void addLog(string log);
+public:
+	static string getLog();
+
+	void putMess(string mess);
+	string getMessage();
+};
+
+
+class ImageFileException :public ErrorLoger{
+private:
+	string path;
 public:
 	ImageFileException(int line, string path);
-
 };
-ImageFileException::ImageFileException(int line, string path) {
-	message = "I can't open " + path + ". It's at line number " + line +
-		"in configuration file\n";
-	addLog(message);
-}
+
+
 class ConfigurationFileException :protected ErrorLoger {
 private:
-	string message;
+	string path;
 public:
 	ConfigurationFileException( string path);
 };
-ConfigurationFileException::ConfigurationFileException( string path) {
-	message = "I can't open configuration file:  " + path + "\n";
-	addLog(message);
-}
+class ImageModeException:ErrorLoger {
+private:
+	string mode;
+public:;
+	ImageModeException(int line, string mode);
+};

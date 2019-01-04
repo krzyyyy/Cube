@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "Model.h"
 #include "Reader.h"
+#include "Exceptions.h"
 
 
 
@@ -23,12 +24,29 @@ void dysplay(vector <Mat> imgs) {
 int main() {
 	Model m1;
 	vector <Mat> images;
-	try {
-		Reader rd("configuration.txt");
-		rd.load(images);
-	}
-	catch (string a) {
-		cout << a << endl;
+	Reader rd("configuration.txt");
+	while (!(images.size() == 6)) {
+		try {
+			
+			rd.load(images);
+		}
+		catch (ImageFileException a) {
+			cout << a.getMessage();
+			cout << "co chesz zrobic?\n1. Zrobic zdjêcie\n2. Zakonczyc \n3. Wczytaæ poprzednie zdjêcie" << endl;
+			int choise = 0;
+			cin >> choise;
+			if (choise == 1) {
+				if (rd.makeFoto(images) == false)
+					return -1;
+			}
+			else if (choise == 2)
+				return -1;
+			else if (choise == 3)
+				images.insert(images.end(), images.end() - 1, images.end());
+		}
+		catch (ImageModeException b) {
+
+		}
 	}
 	dysplay(images);
 	unsigned int sign=0;
