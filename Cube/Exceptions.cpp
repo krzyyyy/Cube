@@ -30,8 +30,11 @@ ConfigurationFileException::ConfigurationFileException(string path) {
 }
 string ErrorLoger::errorlog = "";
 
-ImageModeException::ImageModeException(int line, string mode) {
+ImageModeException::ImageModeException(int line, string mode, string path) {
 	this->mode = mode;
 	string mess = "Mode " + mode + " is undefined. It's at line number " + to_string(line)+" in configuration file.\n" ;
 	putMess(mess);
+}
+string ImageModeException::getPath() {
+	return path;
 }

@@ -12,6 +12,9 @@ Reader::Reader(string path) {
 		throw "configurationFileException";
 	linefile = 1;
 }
+Reader& Reader::operator= (Reader &rd) {
+	return *this;
+}
 void Reader::load(vector <Mat>& images) {
 	images.clear();
 
@@ -29,7 +32,7 @@ void Reader::load(vector <Mat>& images) {
 		else if (mode == "thresholding")
 			thresholding(temp, temp);
 		else if (mode != "")
-			throw ImageModeException(linefile, mode);
+			throw ImageModeException(linefile, mode, path);
 		images.push_back(temp);
 		linefile++;
 	}

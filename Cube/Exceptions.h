@@ -30,9 +30,11 @@ private:
 public:
 	ConfigurationFileException( string path);
 };
-class ImageModeException:ErrorLoger {
+class ImageModeException: public ErrorLoger {
 private:
 	string mode;
+	string path;
 public:;
-	ImageModeException(int line, string mode);
+	ImageModeException(int line, string mode, string path);
+	string getPath();
 };

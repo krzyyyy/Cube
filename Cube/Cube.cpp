@@ -24,7 +24,14 @@ void dysplay(vector <Mat> imgs) {
 int main() {
 	Model m1;
 	vector <Mat> images;
-	Reader rd("configuration.txt");
+	Reader rd;
+	try {
+		rd = Reader("configuration.txt");
+	}
+	catch (ConfigurationFileException conf) {
+		cout << "Brak pliku konfiguracyjnego";
+		return -1;
+	}
 	while (!(images.size() == 6)) {
 		try {
 			
@@ -45,7 +52,21 @@ int main() {
 				images.insert(images.end(), images.end() - 1, images.end());
 		}
 		catch (ImageModeException b) {
-
+			cout << b.getMessage();
+			cout << "Co chcesz zrobic? \n1.Pomin filtr\n2. uzyj gausa\n3. uzyj threshold\n ";
+			int choise = 0;
+			cin >> choise;
+			Mat img = imread(b.getPath());
+			if (choise == 1)
+				images.push_back(img);
+			else if (choise == 2) {
+				rd.gauss(img, img);
+				images.push_back(img);
+			}
+			else if (choise == 3) {
+				rd.thresholding(img, img);
+				images.push_back(img);
+			}
 		}
 	}
 	dysplay(images);
