@@ -9,15 +9,15 @@ class Reader
 public:
 	Reader();
 	Reader(string path);
-	Reader(Reader &reader);
 	void load(vector <Mat>& images);
 	bool makeFoto(vector <Mat>& imeges);
 	void gauss(Mat &imgIn, Mat &imgOut);
 	void thresholding(Mat &imgIn, Mat &imgOut);
-	Reader& operator= (Reader& rd);
+	void open();
 	~Reader();
 
 private:
+	string confpath;
 	fstream file;
 	unsigned int linefile;
 

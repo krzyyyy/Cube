@@ -5,20 +5,18 @@
 
 Reader::Reader() {
 }
-Reader::Reader(string path) {
-	file.open(path, ios::in);
-	//position = file.tellg();
-	if (!file.good()) 
-		throw "configurationFileException";
-	linefile = 1;
+Reader::Reader(string path):confpath(path) {
+	linefile = 0;
 }
-Reader& Reader::operator= (Reader &rd) {
-	return *this;
+void Reader::open() {
+	file.open(confpath, ios::in);
+	if (!file.good())
+		throw ConfigurationFileException(confpath);
 }
 void Reader::load(vector <Mat>& images) {
-	images.clear();
 
 	while (!file.eof()) {
+		linefile++;
 		string line, path, mode;
 		getline(file, line);
 		stringstream ss(line);
@@ -34,8 +32,9 @@ void Reader::load(vector <Mat>& images) {
 		else if (mode != "")
 			throw ImageModeException(linefile, mode, path);
 		images.push_back(temp);
-		linefile++;
 	}
+	if (images.size() < 6)
+		throw TooShortConfigException(confpath, linefile);
 }
 Reader::~Reader() {
 	file.close();

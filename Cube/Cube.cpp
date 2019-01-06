@@ -24,51 +24,55 @@ void dysplay(vector <Mat> imgs) {
 int main() {
 	Model m1;
 	vector <Mat> images;
-	Reader rd;
+	Reader rd("configuration.txt");
 	try {
-		rd = Reader("configuration.txt");
+		rd.open();
+		while (images.size() < 6) {
+			try {
+
+				rd.load(images);
+			}
+			catch (ImageFileException a) {
+				cout << a.getMessage();
+				cout << "co chesz zrobic?\n1. Zrobic zdjêcie\n2. Zakonczyc \n3. Wczytaæ poprzednie zdjêcie" << endl;
+				int choise = 0;
+				cin >> choise;
+				if (choise == 1) {
+					if (rd.makeFoto(images) == false)
+						return -1;
+				}
+				else if (choise == 2)
+					return -1;
+				else if (choise == 3 && images.empty()==false)
+					images.push_back(images[images.size()-1]);
+			}
+			catch (ImageModeException b) {
+				cout << b.getMessage();
+				cout << "Co chcesz zrobic? \n1.Pomin filtr\n2. uzyj gausa\n3. uzyj threshold\n";
+				int choise = 0;
+				cin >> choise;
+				Mat img = imread(b.getPath());
+				if (choise == 1)
+					images.push_back(img);
+				else if (choise == 2) {
+					rd.gauss(img, img);
+					images.push_back(img);
+				}
+				else if (choise == 3) {
+					rd.thresholding(img, img);
+					images.push_back(img);
+				}
+			}
+		}
+	}
+	catch (TooShortConfigException tooshort) {
+		cout << tooshort.getMessage();
 	}
 	catch (ConfigurationFileException conf) {
 		cout << "Brak pliku konfiguracyjnego";
 		return -1;
 	}
-	while (!(images.size() == 6)) {
-		try {
-			
-			rd.load(images);
-		}
-		catch (ImageFileException a) {
-			cout << a.getMessage();
-			cout << "co chesz zrobic?\n1. Zrobic zdjêcie\n2. Zakonczyc \n3. Wczytaæ poprzednie zdjêcie" << endl;
-			int choise = 0;
-			cin >> choise;
-			if (choise == 1) {
-				if (rd.makeFoto(images) == false)
-					return -1;
-			}
-			else if (choise == 2)
-				return -1;
-			else if (choise == 3)
-				images.insert(images.end(), images.end() - 1, images.end());
-		}
-		catch (ImageModeException b) {
-			cout << b.getMessage();
-			cout << "Co chcesz zrobic? \n1.Pomin filtr\n2. uzyj gausa\n3. uzyj threshold\n ";
-			int choise = 0;
-			cin >> choise;
-			Mat img = imread(b.getPath());
-			if (choise == 1)
-				images.push_back(img);
-			else if (choise == 2) {
-				rd.gauss(img, img);
-				images.push_back(img);
-			}
-			else if (choise == 3) {
-				rd.thresholding(img, img);
-				images.push_back(img);
-			}
-		}
-	}
+
 	dysplay(images);
 	unsigned int sign=0;
 	

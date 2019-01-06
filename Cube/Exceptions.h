@@ -24,11 +24,19 @@ public:
 };
 
 
-class ConfigurationFileException :protected ErrorLoger {
+class ConfigurationFileException :public ErrorLoger {
 private:
 	string path;
 public:
+	ConfigurationFileException();
 	ConfigurationFileException( string path);
+};
+class TooShortConfigException : public ConfigurationFileException {
+private:
+	int len;
+public:
+	TooShortConfigException();
+	TooShortConfigException(string path, int len);
 };
 class ImageModeException: public ErrorLoger {
 private:

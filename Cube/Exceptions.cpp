@@ -17,6 +17,7 @@ void ErrorLoger::putMess(string mess){
 string ErrorLoger::getMessage() {
 	return message;
 }
+string ErrorLoger::errorlog = "";
 ImageFileException::ImageFileException(int line, string path) {
 	this->path = path;
 	string mess = "I can't open " + path + ". It's at line number " + to_string(line) +
@@ -26,15 +27,23 @@ ImageFileException::ImageFileException(int line, string path) {
 ConfigurationFileException::ConfigurationFileException(string path) {
 	this->path = path;
 	string mess = "I can't open configuration file:  " + path + "\n";
-	putMess(mess);
+	this->putMess(mess);
 }
-string ErrorLoger::errorlog = "";
+ConfigurationFileException::ConfigurationFileException(){}
 
 ImageModeException::ImageModeException(int line, string mode, string path) {
 	this->mode = mode;
+	this->path = path;
 	string mess = "Mode " + mode + " is undefined. It's at line number " + to_string(line)+" in configuration file.\n" ;
-	putMess(mess);
+	this->putMess(mess);
 }
 string ImageModeException::getPath() {
 	return path;
+}
+TooShortConfigException::TooShortConfigException() {}
+TooShortConfigException::TooShortConfigException(string path, int len):
+	ConfigurationFileException(path) {
+	this->len=len;
+	string mess = "In " + path + " is: " + to_string(len) + "images. It's not enough.\n";
+	this->putMess(mess);
 }
