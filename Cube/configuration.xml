@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+<Photo graphicFilter="thresholding">1.png</Photo>
+<Photo>2.png</Photo>
+<Photo graphicFilter="gauss">3.png</Photo>
+<Photo>4.png</Photo>
+<Photo graphicFilter="thresholding">5.png</Photo>
+<Photo>6.png</Photo>
+</configuration>

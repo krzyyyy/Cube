@@ -2,19 +2,51 @@
 #include "stdafx.h"
 #include "Reader.h"
 #include "Exceptions.h"
+#include <memory>
 
+char tab[] = "<?xml version=\"1.0\" encoding=\"utf - 8\"?>"
+"<configuration>"
+"<Photo graphicFilter=\"thresholding\">images/1.png</Photo>"
+"<Photo>images/2.png</Photo>"
+"<Photo>images/3.png</Photo>"
+"<Photo>images/4.png</Photo>"
+"<Photo>images/5.png</Photo>"
+"<Photo>images/6.png</Photo>"
+"</configuration>";
 Reader::Reader() {
 }
 Reader::Reader(string path):confpath(path) {
 	linefile = 0;
 }
 void Reader::open() {
-	file.open(confpath, ios::in);
+	file.open(confpath, ios::in | ios::binary);
 	if (!file.good())
 		throw ConfigurationFileException(confpath);
+	if (confpath.substr(confpath.length() - 4) == ".txtj") {
+		ext = Extension::TXT;
+	}
+	else if (confpath.substr(confpath.length() - 4) == ".xml"||".txt") {
+		ext = Extension::XML;
+		file.seekg(0, file.end);
+		const auto filesize = file.tellg();
+		file.seekg(0);
+		
+		unique_ptr < char[] > filecontext(new char[filesize + static_cast < decltype(filesize) >(1)]);
+		file.read(filecontext.get(), filesize);
+		filecontext.get()[filesize] = '\0';
+		try
+		{
+			xmlfile.parse<0>(filecontext.get());
+		}
+		catch (const rapidxml::parse_error & e)
+		{
+			std::cerr << e.what() << " here: " << e.where < char >() << std::endl;
+			return ;
+		}
+	}
+
 }
 void Reader::load(vector <Mat>& images) {
-
 	while (!file.eof()) {
 		linefile++;
 		string line, path, mode;
@@ -36,6 +68,31 @@ void Reader::load(vector <Mat>& images) {
 	if (images.size() < 6)
 		throw TooShortConfigException(confpath, linefile);
 }
+void Reader::loadXML(vector <Mat>& images) {
+	print(cout, xmlfile, 0);
+	//using namespace::rapidxml;
+	rapidxml::xml_node<>*nodemaster = xmlfile.first_node();
+	for (rapidxml::xml_node<>* photo = nodemaster->first_node(); photo; photo = photo->next_sibling()) {
+		string path = photo->value();
+		string mode = "";
+		if(photo->first_attribute())
+			mode = photo->first_attribute()->value();
+		Mat temp = imread(path);
+		if (temp.empty()) {
+			throw ImageFileException(linefile, path);
+		}
+		else if (mode == "gauss")
+			gauss(temp, temp);
+		else if (mode == "thresholding")
+			thresholding(temp, temp);
+		else if (mode != "")
+			throw ImageModeException(linefile, mode, path);
+		images.push_back(temp);
+	}
+	if (images.size() < 6)
+		throw TooShortConfigException(confpath, linefile);
+}
+
 Reader::~Reader() {
 	file.close();
 }
@@ -142,3 +199,4 @@ bool Reader::makeFoto(vector <Mat> &images) {
 	images.push_back(frame);
 	return true;
 }
+

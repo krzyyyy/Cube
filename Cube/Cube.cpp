@@ -10,6 +10,7 @@
 
 
 
+
 using namespace std;
 using namespace cv;
 //funkcje kolejno rotacji punktów 3d, obliczania œrodkow ka¿dej ze scian i obslugi przyciskow
@@ -24,13 +25,13 @@ void dysplay(vector <Mat> imgs) {
 int main() {
 	Model m1;
 	vector <Mat> images;
-	Reader rd("configuration.txt");
+	Reader rd("conf.txt");
 	try {
 		rd.open();
 		while (images.size() < 6) {
 			try {
 
-				rd.load(images);
+				rd.loadXML(images);
 			}
 			catch (ImageFileException a) {
 				cout << a.getMessage();
