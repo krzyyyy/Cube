@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "Reader.h"
 #include "Exceptions.h"
+#include "TraceLogger.h"
 
 
 
@@ -23,9 +24,9 @@ void dysplay(vector <Mat> imgs) {
 }
 
 int main() {
+	
 	Model m1;
 	vector <Mat> images;
-	ReaderTXT rd();
 	Reader *ob;
 	try {
 		ob = Reader::open("configuration.xml");
@@ -76,7 +77,7 @@ int main() {
 
 	dysplay(images);
 	unsigned int sign=0;
-	
+	cout << TraceLogger::toString();
 	m1 = Model(images);
 	while (sign != 27) {
 		m1.key_handling(sign);

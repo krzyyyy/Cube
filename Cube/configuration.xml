@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <configuration>
 <Photo graphicFilter="thresholding">images/1.png</Photo>
-<Photo>images/2.png</Photo>
+<Photo>images/22.png</Photo>
 <Photo graphicFilter="gauss">images/3.png</Photo>
 <Photo>images/4.png</Photo>
 <Photo graphicFilter="thresholding">images/5.png</Photo>

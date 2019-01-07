@@ -2,17 +2,9 @@
 #include "stdafx.h"
 #include "Reader.h"
 #include "Exceptions.h"
+#include "TraceLogger.h"
 #include <memory>
 
-char tab[] = "<?xml version=\"1.0\" encoding=\"utf - 8\"?>"
-"<configuration>"
-"<Photo graphicFilter=\"thresholding\">images/1.png</Photo>"
-"<Photo>images/2.png</Photo>"
-"<Photo>images/3.png</Photo>"
-"<Photo>images/4.png</Photo>"
-"<Photo>images/5.png</Photo>"
-"<Photo>images/6.png</Photo>"
-"</configuration>";
 Reader::Reader(): linefile(0) {
 }
 Reader::Reader(string path) : linefile(0) {
@@ -24,30 +16,15 @@ Reader::Reader(string path) : linefile(0) {
 
 Reader* Reader::open(string path) {
 	if (path.substr(path.length() - 4) == ".txt") {
-		unique_ptr<ReaderTXT> reader(new ReaderTXT(path));
+		//unique_ptr<ReaderTXT> reader(new ReaderTXT(path));
 		return new ReaderTXT(path);
 	}
 	else if (path.substr(path.length() - 4) == ".xml") {
-		unique_ptr<ReaderXML> reader(new ReaderXML(path));
+		//unique_ptr<ReaderXML> reader(new ReaderXML(path));
 		return new ReaderXML(path);
-
-		/*rapidxml::xml_node<>*nodemaster = xmlfile.first_node();
-		for (rapidxml::xml_node<>* photo = nodemaster->first_node(); photo; photo = photo->next_sibling()) {
-			string path = photo->value();
-			string mode = "";
-			if (photo->first_attribute())
-				mode = photo->first_attribute()->value();
-			Mat temp = imread(path);
-			if (temp.empty()) {
-				throw ImageFileException(linefile, path);
-			}
-			else if (mode == "gauss")
-				gauss(temp, temp);
-			else if (mode == "thresholding")
-				thresholding(temp, temp);
-			else if (mode != "")
-				throw ImageModeException(linefile, mode, path);
-		}*/
+	}
+	else {
+		throw ConfigurationFileException(path);
 	}
 
 }
@@ -161,14 +138,14 @@ bool Reader::makeFoto(vector <Mat> &images) {
 	return true;
 }
 void ReaderXML::load(vector <Mat>& images) {
-	//print(cout, xmlfile, 0);
-	//using namespace::rapidxml;
-	rapidxml::xml_node<>*nodemaster = xmlfile.first_node();
-	for (rapidxml::xml_node<>* photo = nodemaster->first_node(); photo; photo = photo->next_sibling()) {
-		string path = photo->value();
+	
+		while(currentphoto) {
+		string path = currentphoto->value();
 		string mode = "";
-		if (photo->first_attribute())
-			mode = photo->first_attribute()->value();
+		if (currentphoto->first_attribute())
+			mode = currentphoto->first_attribute()->value();
+		currentphoto = currentphoto->next_sibling();
+		linefile++;
 		Mat temp = imread(path);
 		if (temp.empty()) {
 			throw ImageFileException(linefile, path);
@@ -180,6 +157,7 @@ void ReaderXML::load(vector <Mat>& images) {
 		else if (mode != "")
 			throw ImageModeException(linefile, mode, path);
 		images.push_back(temp);
+		TraceLogger::addLog("testowanie klasy loggera", __FUNCSIG__);
 	}
 	if (images.size() < 6)
 		throw TooShortConfigException(confpath, linefile);
@@ -197,7 +175,9 @@ ReaderXML::ReaderXML(string path):Reader(path) {
 		std::cerr << e.what() << " here: " << e.where < char >() << std::endl;
 		return;
 	}
+	currentphoto = xmlfile.first_node()->first_node();
 	print(cout, xmlfile, 0);
+	linefile++;
 }
 
 void ReaderTXT::load(vector <Mat>& images) {

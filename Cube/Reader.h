@@ -33,6 +33,7 @@ public:
 private:
 	vector<char> buffer;
 	rapidxml::xml_document<> xmlfile;
+	rapidxml::xml_node<>* currentphoto;
 };
 class ReaderTXT :public Reader {
 public:
