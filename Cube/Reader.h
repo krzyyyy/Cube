@@ -11,22 +11,35 @@ class Reader
 public:
 	Reader();
 	Reader(string path);
-	void load(vector <Mat>& images);
-	void loadXML(vector <Mat>& images);
-	bool makeFoto(vector <Mat>& imeges);
-	void gauss(Mat &imgIn, Mat &imgOut);
-	void thresholding(Mat &imgIn, Mat &imgOut);
-	void open();
+	virtual void load(vector <Mat>& images)=0;
+	static bool makeFoto(vector <Mat>& imeges);
+	static void gauss(Mat &imgIn, Mat &imgOut);
+	static void thresholding(Mat &imgIn, Mat &imgOut);
+	static Reader* open(string path);
 	~Reader();
 
-private:
+protected:
 	string confpath;
-	fstream file;
+	ifstream file;
 	unsigned int linefile;
-	enum class Extension { TXT, XML };
-	Extension ext;
-	rapidxml::xml_document<> xmlfile;
 
+
+};
+class ReaderXML :public Reader {
+public:
+	ReaderXML();
+	ReaderXML(string path);
+	void load(vector <Mat>& images);
+private:
+	vector<char> buffer;
+	rapidxml::xml_document<> xmlfile;
+};
+class ReaderTXT :public Reader {
+public:
+	ReaderTXT();
+	ReaderTXT(string path);
+	void load(vector <Mat>& images);
+private:
 
 };
 

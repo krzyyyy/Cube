@@ -13,85 +13,46 @@ char tab[] = "<?xml version=\"1.0\" encoding=\"utf - 8\"?>"
 "<Photo>images/5.png</Photo>"
 "<Photo>images/6.png</Photo>"
 "</configuration>";
-Reader::Reader() {
+Reader::Reader(): linefile(0) {
 }
-Reader::Reader(string path):confpath(path) {
-	linefile = 0;
-}
-void Reader::open() {
+Reader::Reader(string path) : linefile(0) {
+	confpath = path;
 	file.open(confpath, ios::in | ios::binary);
 	if (!file.good())
 		throw ConfigurationFileException(confpath);
-	if (confpath.substr(confpath.length() - 4) == ".txtj") {
-		ext = Extension::TXT;
+}
+
+Reader* Reader::open(string path) {
+	if (path.substr(path.length() - 4) == ".txt") {
+		unique_ptr<ReaderTXT> reader(new ReaderTXT(path));
+		return new ReaderTXT(path);
 	}
-	else if (confpath.substr(confpath.length() - 4) == ".xml"||".txt") {
-		ext = Extension::XML;
-		file.seekg(0, file.end);
-		const auto filesize = file.tellg();
-		file.seekg(0);
-		
-		unique_ptr < char[] > filecontext(new char[filesize + static_cast < decltype(filesize) >(1)]);
-		file.read(filecontext.get(), filesize);
-		filecontext.get()[filesize] = '\0';
-		try
-		{
-			xmlfile.parse<0>(filecontext.get());
-		}
-		catch (const rapidxml::parse_error & e)
-		{
-			std::cerr << e.what() << " here: " << e.where < char >() << std::endl;
-			return ;
-		}
+	else if (path.substr(path.length() - 4) == ".xml") {
+		unique_ptr<ReaderXML> reader(new ReaderXML(path));
+		return new ReaderXML(path);
+
+		/*rapidxml::xml_node<>*nodemaster = xmlfile.first_node();
+		for (rapidxml::xml_node<>* photo = nodemaster->first_node(); photo; photo = photo->next_sibling()) {
+			string path = photo->value();
+			string mode = "";
+			if (photo->first_attribute())
+				mode = photo->first_attribute()->value();
+			Mat temp = imread(path);
+			if (temp.empty()) {
+				throw ImageFileException(linefile, path);
+			}
+			else if (mode == "gauss")
+				gauss(temp, temp);
+			else if (mode == "thresholding")
+				thresholding(temp, temp);
+			else if (mode != "")
+				throw ImageModeException(linefile, mode, path);
+		}*/
 	}
 
 }
-void Reader::load(vector <Mat>& images) {
-	while (!file.eof()) {
-		linefile++;
-		string line, path, mode;
-		getline(file, line);
-		stringstream ss(line);
-		ss >> path >> mode;
-		Mat temp = imread(path);
-		if (temp.empty()) {
-			throw ImageFileException(linefile, path);
-		}
-		else if (mode == "gauss")
-			gauss(temp, temp);
-		else if (mode == "thresholding")
-			thresholding(temp, temp);
-		else if (mode != "")
-			throw ImageModeException(linefile, mode, path);
-		images.push_back(temp);
-	}
-	if (images.size() < 6)
-		throw TooShortConfigException(confpath, linefile);
-}
-void Reader::loadXML(vector <Mat>& images) {
-	print(cout, xmlfile, 0);
-	//using namespace::rapidxml;
-	rapidxml::xml_node<>*nodemaster = xmlfile.first_node();
-	for (rapidxml::xml_node<>* photo = nodemaster->first_node(); photo; photo = photo->next_sibling()) {
-		string path = photo->value();
-		string mode = "";
-		if(photo->first_attribute())
-			mode = photo->first_attribute()->value();
-		Mat temp = imread(path);
-		if (temp.empty()) {
-			throw ImageFileException(linefile, path);
-		}
-		else if (mode == "gauss")
-			gauss(temp, temp);
-		else if (mode == "thresholding")
-			thresholding(temp, temp);
-		else if (mode != "")
-			throw ImageModeException(linefile, mode, path);
-		images.push_back(temp);
-	}
-	if (images.size() < 6)
-		throw TooShortConfigException(confpath, linefile);
-}
+
+
 
 Reader::~Reader() {
 	file.close();
@@ -199,4 +160,68 @@ bool Reader::makeFoto(vector <Mat> &images) {
 	images.push_back(frame);
 	return true;
 }
+void ReaderXML::load(vector <Mat>& images) {
+	//print(cout, xmlfile, 0);
+	//using namespace::rapidxml;
+	rapidxml::xml_node<>*nodemaster = xmlfile.first_node();
+	for (rapidxml::xml_node<>* photo = nodemaster->first_node(); photo; photo = photo->next_sibling()) {
+		string path = photo->value();
+		string mode = "";
+		if (photo->first_attribute())
+			mode = photo->first_attribute()->value();
+		Mat temp = imread(path);
+		if (temp.empty()) {
+			throw ImageFileException(linefile, path);
+		}
+		else if (mode == "gauss")
+			gauss(temp, temp);
+		else if (mode == "thresholding")
+			thresholding(temp, temp);
+		else if (mode != "")
+			throw ImageModeException(linefile, mode, path);
+		images.push_back(temp);
+	}
+	if (images.size() < 6)
+		throw TooShortConfigException(confpath, linefile);
+}
+ReaderXML::ReaderXML() {}
+ReaderXML::ReaderXML(string path):Reader(path) {
+	buffer = vector<char>((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+	buffer.push_back('\0');
+	try
+	{
+		xmlfile.parse<0>(&buffer[0]);
+	}
+	catch (const rapidxml::parse_error & e)
+	{
+		std::cerr << e.what() << " here: " << e.where < char >() << std::endl;
+		return;
+	}
+	print(cout, xmlfile, 0);
+}
 
+void ReaderTXT::load(vector <Mat>& images) {
+	while (!file.eof()) {
+		linefile++;
+		string line, path, mode;
+		getline(file, line);
+		stringstream ss(line);
+		ss >> path >> mode;
+		Mat temp = imread(path);
+		if (temp.empty()) {
+			throw ImageFileException(linefile, path);
+		}
+		else if (mode == "gauss")
+			gauss(temp, temp);
+		else if (mode == "thresholding")
+			thresholding(temp, temp);
+		else if (mode != "")
+			throw ImageModeException(linefile, mode, path);
+		images.push_back(temp);
+	}
+	if (images.size() < 6)
+		throw TooShortConfigException(confpath, linefile);
+}
+ReaderTXT::ReaderTXT(string path):Reader(path) {
+}
+ReaderTXT::ReaderTXT() {}

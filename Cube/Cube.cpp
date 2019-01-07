@@ -25,13 +25,13 @@ void dysplay(vector <Mat> imgs) {
 int main() {
 	Model m1;
 	vector <Mat> images;
-	Reader rd("conf.txt");
+	ReaderTXT rd();
+	Reader *ob;
 	try {
-		rd.open();
+		ob = Reader::open("configuration.xml");
 		while (images.size() < 6) {
 			try {
-
-				rd.loadXML(images);
+				ob->load(images);
 			}
 			catch (ImageFileException a) {
 				cout << a.getMessage();
@@ -39,7 +39,7 @@ int main() {
 				int choise = 0;
 				cin >> choise;
 				if (choise == 1) {
-					if (rd.makeFoto(images) == false)
+					if (Reader::makeFoto(images) == false)
 						return -1;
 				}
 				else if (choise == 2)
@@ -56,11 +56,11 @@ int main() {
 				if (choise == 1)
 					images.push_back(img);
 				else if (choise == 2) {
-					rd.gauss(img, img);
+					Reader::gauss(img, img);
 					images.push_back(img);
 				}
 				else if (choise == 3) {
-					rd.thresholding(img, img);
+					Reader::thresholding(img, img);
 					images.push_back(img);
 				}
 			}
