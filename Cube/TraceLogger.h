@@ -6,12 +6,11 @@ using namespace std;
 class TraceLogger {
 private:
 	static string start;
-	static vector <string> classnames;
-	static vector <string> methodnames;
+	static vector <string> done;
 	static vector <string> actions;
 public:
 	TraceLogger();
-	static void addLog(string a, string m);
+	static void addLog(string a);
 	static string toString();
-	
+	static void complite();
 };

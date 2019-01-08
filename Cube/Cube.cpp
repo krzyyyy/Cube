@@ -6,6 +6,7 @@
 #include "Reader.h"
 #include "Exceptions.h"
 #include "TraceLogger.h"
+#include <memory>
 
 
 
@@ -23,12 +24,18 @@ void dysplay(vector <Mat> imgs) {
 	}
 }
 
-int main() {
-	
+int main(int argc, char **argv) {
+	string confpath;
 	Model m1;
 	vector <Mat> images;
+	unique_ptr <Reader> reader(new ReaderTXT());
 	Reader *ob;
+	if (argc > 1)
+		confpath = argv[1];
+	else
+		confpath = "defaultconfig.txt";
 	try {
+		reader = unique_ptr<Reader>(Reader::open("configuration.xml"));
 		ob = Reader::open("configuration.xml");
 		while (images.size() < 6) {
 			try {
@@ -71,13 +78,12 @@ int main() {
 		cout << tooshort.getMessage();
 	}
 	catch (ConfigurationFileException conf) {
-		cout << "Brak pliku konfiguracyjnego";
+		cout << "Brak pliku konfiguracyjnego lub nieprawidlowe rozszerzenie\n";
 		return -1;
 	}
 
-	dysplay(images);
+
 	unsigned int sign=0;
-	cout << TraceLogger::toString();
 	m1 = Model(images);
 	while (sign != 27) {
 		m1.key_handling(sign);

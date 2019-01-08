@@ -8,30 +8,52 @@
 Reader::Reader(): linefile(0) {
 }
 Reader::Reader(string path) : linefile(0) {
+	
 	confpath = path;
 	file.open(confpath, ios::in | ios::binary);
 	if (!file.good())
 		throw ConfigurationFileException(confpath);
+	TraceLogger::complite();
 }
 
 Reader* Reader::open(string path) {
+	TraceLogger::addLog("Openning configuration file... ");
 	if (path.substr(path.length() - 4) == ".txt") {
-		//unique_ptr<ReaderTXT> reader(new ReaderTXT(path));
 		return new ReaderTXT(path);
 	}
 	else if (path.substr(path.length() - 4) == ".xml") {
-		//unique_ptr<ReaderXML> reader(new ReaderXML(path));
 		return new ReaderXML(path);
 	}
 	else {
 		throw ConfigurationFileException(path);
 	}
 
+
 }
 
 
 
 Reader::~Reader() {
+	if (!ErrorLoger::getLog().empty()) {
+		cout << "Where do you want to write error log?\n1. console\n2. file errorlog.txt\n";
+		int choice = 0;
+		cin >> choice; 
+		if (choice == 1) {
+			cout << ErrorLoger::getLog() << endl;
+			getchar();
+		}
+		else if (choice == 2) {
+			fstream fileerr("errorlog.txt", ios::out);
+			if (fileerr.good())
+			{
+				fileerr << ErrorLoger::getLog();
+				fileerr.close();
+			}
+		}
+		else {
+			cout << "There is no such choise\n";
+		}
+	}
 	file.close();
 }
 void Reader::gauss(Mat &imgIn, Mat &imgOut) {
@@ -142,6 +164,7 @@ void ReaderXML::load(vector <Mat>& images) {
 		while(currentphoto) {
 		string path = currentphoto->value();
 		string mode = "";
+		TraceLogger::addLog("Openning image named: " +path+" ... ");
 		if (currentphoto->first_attribute())
 			mode = currentphoto->first_attribute()->value();
 		currentphoto = currentphoto->next_sibling();
@@ -157,7 +180,7 @@ void ReaderXML::load(vector <Mat>& images) {
 		else if (mode != "")
 			throw ImageModeException(linefile, mode, path);
 		images.push_back(temp);
-		TraceLogger::addLog("testowanie klasy loggera", __FUNCSIG__);
+		TraceLogger::complite();
 	}
 	if (images.size() < 6)
 		throw TooShortConfigException(confpath, linefile);
@@ -187,6 +210,7 @@ void ReaderTXT::load(vector <Mat>& images) {
 		getline(file, line);
 		stringstream ss(line);
 		ss >> path >> mode;
+		TraceLogger::addLog("Openning image named: " + path + " ... ");
 		Mat temp = imread(path);
 		if (temp.empty()) {
 			throw ImageFileException(linefile, path);
@@ -198,6 +222,7 @@ void ReaderTXT::load(vector <Mat>& images) {
 		else if (mode != "")
 			throw ImageModeException(linefile, mode, path);
 		images.push_back(temp);
+		TraceLogger::complite();
 	}
 	if (images.size() < 6)
 		throw TooShortConfigException(confpath, linefile);

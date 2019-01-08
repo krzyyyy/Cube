@@ -1,8 +1,8 @@
-images/7.png thresholding
-images/9.png 
 images/8.png thresholding
+images/7.png 
+images/9.png thresholding
 images/2.png gauss
-images/3.png err
+images/10.png thresholding
 images/4.png
 images/5.png
 images/6.png

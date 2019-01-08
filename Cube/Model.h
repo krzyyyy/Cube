@@ -25,6 +25,7 @@ private:
 public:
 	Model();
 	Model(vector <Mat> imgs);
+	~Model();
 	void key_handling(int sign);
 	void mul();
 	void mean();

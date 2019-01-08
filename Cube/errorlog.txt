@@ -1,0 +1,2 @@
+Mode gaussvslaplace is undefined. It's at line number 4 in configuration file.
+I can't open images/44.png. It's at line number 5 in configuration file

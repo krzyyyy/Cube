@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <configuration>
-<Photo graphicFilter="thresholding">images/1.png</Photo>
-<Photo>images/22.png</Photo>
-<Photo graphicFilter="gauss">images/3.png</Photo>
-<Photo>images/4.png</Photo>
-<Photo graphicFilter="thresholding">images/5.png</Photo>
-<Photo>images/6.png</Photo>
+<Photo graphicFilter="thresholding">images/9.png</Photo>
+<Photo>images/10.png</Photo>
+<Photo graphicFilter="gaussvslaplace">images/7.png</Photo>
+<Photo>images/44.png</Photo>
+<Photo graphicFilter="thresholding">images/8.png</Photo>
+<Photo>images/7.png</Photo>
 </configuration>

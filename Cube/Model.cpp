@@ -108,3 +108,6 @@ unsigned int Model::dysplay() {
 	imshow("okno", img);
 	return waitKey(0);
 }
+Model::~Model() {
+	destroyAllWindows();
+}

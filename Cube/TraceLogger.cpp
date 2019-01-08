@@ -3,23 +3,20 @@
 #include "TraceLogger.h"
 
 TraceLogger::TraceLogger() {}
-void TraceLogger::addLog( string a, string m) {
-	stringstream strictname(m);
-	string classnam, methodnam;
-	getline(strictname, classnam, ':');
-	getline(strictname, methodnam);
-	methodnames.push_back(methodnam);
-	classnames.push_back(classnam);
+void TraceLogger::addLog( string a) {
 	actions.push_back(a);
+	done.push_back("fail");
 }
 string TraceLogger::toString() {
 	string score = "";
 	for (unsigned int i = 0; i < actions.size(); i++) {
-		score += actions[i] + methodnames[i] + classnames[i] + "true\n";
+		score += actions[i]+ "  "+done[i]+"\n";
 	}
 	return score;
 }
+void TraceLogger::complite() {
+	done[done.size() - 1] = "completed succesfull";
+}
 string TraceLogger::start = "";
-vector <string> TraceLogger::classnames = vector <string>();
-vector <string> TraceLogger::methodnames = vector <string>();
+vector <string> TraceLogger::done = vector <string>();
 vector <string> TraceLogger::actions = vector <string>();
