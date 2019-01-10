@@ -2,13 +2,14 @@
 #include "stdafx.h"
 #include "TraceLogger.h"
 
-TraceLogger::TraceLogger() {}
+TraceLogger::TraceLogger() {
+}
 void TraceLogger::addLog( string a) {
 	actions.push_back(a);
 	done.push_back("fail");
 }
 string TraceLogger::toString() {
-	string score = "";
+	string score = start;
 	for (unsigned int i = 0; i < actions.size(); i++) {
 		score += actions[i]+ "  "+done[i]+"\n";
 	}

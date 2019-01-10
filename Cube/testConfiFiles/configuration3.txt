@@ -1,0 +1,4 @@
+images/7.png thresholding
+images/9.png 
+images/8.png thresholding
+images/2.png gauss

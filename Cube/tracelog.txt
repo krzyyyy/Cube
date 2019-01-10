@@ -1,0 +1,7 @@
+Openning configuration file...   completed succesfull
+Openning image named: images/9.png ...   completed succesfull
+Openning image named: images/10.png ...   completed succesfull
+Openning image named: images/7.png ...   fail
+Openning image named: images/44.png ...   fail
+Openning image named: images/8.png ...   completed succesfull
+Openning image named: images/7.png ...   completed succesfull

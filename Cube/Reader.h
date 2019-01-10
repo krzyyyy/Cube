@@ -22,7 +22,8 @@ protected:
 	string confpath;
 	ifstream file;
 	unsigned int linefile;
-
+private:
+	void writeLog(string log, string type);
 
 };
 class ReaderXML :public Reader {

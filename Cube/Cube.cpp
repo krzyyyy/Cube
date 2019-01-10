@@ -1,11 +1,11 @@
 // Cube.cpp : Defines the entry point for the console application.
 //
-
 #include "stdafx.h"
 #include "Model.h"
 #include "Reader.h"
 #include "Exceptions.h"
 #include "TraceLogger.h"
+#include "Catch\Catch.h"
 #include <memory>
 
 
@@ -24,22 +24,20 @@ void dysplay(vector <Mat> imgs) {
 	}
 }
 
-int main(int argc, char **argv) {
+int mains(int argc, char **argv) {
 	string confpath;
 	Model m1;
 	vector <Mat> images;
-	unique_ptr <Reader> reader(new ReaderTXT());
-	Reader *ob;
+	unique_ptr <Reader> reader;
 	if (argc > 1)
 		confpath = argv[1];
 	else
 		confpath = "defaultconfig.txt";
 	try {
 		reader = unique_ptr<Reader>(Reader::open("configuration.xml"));
-		ob = Reader::open("configuration.xml");
 		while (images.size() < 6) {
 			try {
-				ob->load(images);
+				reader.get()->load(images);
 			}
 			catch (ImageFileException a) {
 				cout << a.getMessage();
@@ -47,8 +45,10 @@ int main(int argc, char **argv) {
 				int choise = 0;
 				cin >> choise;
 				if (choise == 1) {
-					if (Reader::makeFoto(images) == false)
+					if (Reader::makeFoto(images) == false) {
+						cout << "Camera is disable\n";
 						return -1;
+					}
 				}
 				else if (choise == 2)
 					return -1;
@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
 	}
 	catch (TooShortConfigException tooshort) {
 		cout << tooshort.getMessage();
+		return -1;
 	}
 	catch (ConfigurationFileException conf) {
 		cout << "Brak pliku konfiguracyjnego lub nieprawidlowe rozszerzenie\n";

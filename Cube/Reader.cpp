@@ -27,33 +27,33 @@ Reader* Reader::open(string path) {
 	else {
 		throw ConfigurationFileException(path);
 	}
-
-
 }
-
-
-
-Reader::~Reader() {
-	if (!ErrorLoger::getLog().empty()) {
-		cout << "Where do you want to write error log?\n1. console\n2. file errorlog.txt\n";
+void Reader::writeLog(string log, string type) {
+	if (!log.empty()) {
+		cout << "Where do you want to write "+ type+" log?\n1. console\n2. file "+type+"log.txt\n";
 		int choice = 0;
-		cin >> choice; 
+		cin >> choice;
 		if (choice == 1) {
-			cout << ErrorLoger::getLog() << endl;
-			getchar();
+			cout << log;
 		}
 		else if (choice == 2) {
-			fstream fileerr("errorlog.txt", ios::out);
-			if (fileerr.good())
+			fstream filet(type+"log.txt", ios::out);
+			if (filet.good())
 			{
-				fileerr << ErrorLoger::getLog();
-				fileerr.close();
+				filet << log;
+				filet.close();
 			}
 		}
 		else {
 			cout << "There is no such choise\n";
 		}
 	}
+}
+
+
+Reader::~Reader() {
+	writeLog(TraceLogger::toString(), "trace");
+	writeLog(ErrorLoger::getLog(), "error");
 	file.close();
 }
 void Reader::gauss(Mat &imgIn, Mat &imgOut) {
