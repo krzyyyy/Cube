@@ -18,6 +18,9 @@ string TraceLogger::toString() {
 void TraceLogger::complite() {
 	done[done.size() - 1] = "completed succesfull";
 }
+unsigned int TraceLogger::getSize() {
+	return actions.size();
+}
 string TraceLogger::start = "";
 vector <string> TraceLogger::done = vector <string>();
 vector <string> TraceLogger::actions = vector <string>();

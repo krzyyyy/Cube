@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cube", "Cube\Cube.vcxproj", "{23BDFBD4-4FCD-48FE-8EC4-8ABEF54B379F}"
 EndProject
@@ -11,6 +11,8 @@ Global
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+		test|x64 = test|x64
+		test|x86 = test|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{23BDFBD4-4FCD-48FE-8EC4-8ABEF54B379F}.Debug|x64.ActiveCfg = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{23BDFBD4-4FCD-48FE-8EC4-8ABEF54B379F}.Release|x64.Build.0 = Release|x64
 		{23BDFBD4-4FCD-48FE-8EC4-8ABEF54B379F}.Release|x86.ActiveCfg = Release|Win32
 		{23BDFBD4-4FCD-48FE-8EC4-8ABEF54B379F}.Release|x86.Build.0 = Release|Win32
+		{23BDFBD4-4FCD-48FE-8EC4-8ABEF54B379F}.test|x64.ActiveCfg = test|x64
+		{23BDFBD4-4FCD-48FE-8EC4-8ABEF54B379F}.test|x64.Build.0 = test|x64
+		{23BDFBD4-4FCD-48FE-8EC4-8ABEF54B379F}.test|x86.ActiveCfg = test|Win32
+		{23BDFBD4-4FCD-48FE-8EC4-8ABEF54B379F}.test|x86.Build.0 = test|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

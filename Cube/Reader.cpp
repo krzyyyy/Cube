@@ -15,14 +15,20 @@ Reader::Reader(string path) : linefile(0) {
 		throw ConfigurationFileException(confpath);
 	TraceLogger::complite();
 }
-
-Reader* Reader::open(string path) {
+Reader::Reader(Reader& rd) {
+	this->confpath = rd.confpath;
+	this->linefile = rd.linefile;
+	rd.file.close();
+	this->file.open(rd.confpath);
+}
+void Reader::open(string path, unique_ptr<Reader> &ptr) {
 	TraceLogger::addLog("Openning configuration file... ");
 	if (path.substr(path.length() - 4) == ".txt") {
-		return new ReaderTXT(path);
+		ptr = move(make_unique<ReaderTXT>(ReaderTXT(path)));
+		//return unique_ptr<Reader>(make_unique<ReaderTXT>(ReaderTXT(path)));
 	}
 	else if (path.substr(path.length() - 4) == ".xml") {
-		return new ReaderXML(path);
+		ptr = move(make_unique<ReaderXML>(ReaderXML(path)));
 	}
 	else {
 		throw ConfigurationFileException(path);
@@ -49,13 +55,24 @@ void Reader::writeLog(string log, string type) {
 		}
 	}
 }
-
+Reader& Reader::operator=(Reader& rd) {
+	this->confpath = rd.confpath;
+	this->linefile = rd.linefile;
+	rd.file.close();
+	this->file.open(rd.confpath);
+	return *this;
+}
 
 Reader::~Reader() {
-	writeLog(TraceLogger::toString(), "trace");
-	writeLog(ErrorLoger::getLog(), "error");
-	file.close();
+	cout << "Wychodzê z :" + confpath + "\n";
+	if (TraceLogger::getSize() > 1) {
+		writeLog(TraceLogger::toString(), "trace");
+		writeLog(ErrorLoger::getLog(), "error");
+	}
+	if(file)
+		file.close();
 }
+
 void Reader::gauss(Mat &imgIn, Mat &imgOut) {
 	imgIn.copyTo(imgOut);
 	Mat temp(imgIn.rows + 2, imgIn.cols + 2, imgIn.type());
@@ -185,7 +202,7 @@ void ReaderXML::load(vector <Mat>& images) {
 	if (images.size() < 6)
 		throw TooShortConfigException(confpath, linefile);
 }
-ReaderXML::ReaderXML() {}
+ReaderXML::ReaderXML():Reader() {}
 ReaderXML::ReaderXML(string path):Reader(path) {
 	buffer = vector<char>((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 	buffer.push_back('\0');
@@ -199,6 +216,21 @@ ReaderXML::ReaderXML(string path):Reader(path) {
 		return;
 	}
 	currentphoto = xmlfile.first_node()->first_node();
+	print(cout, xmlfile, 0);
+	linefile++;
+}
+ReaderXML::ReaderXML(ReaderXML &rd):Reader(rd) {
+	this->buffer = rd.buffer;
+	try
+	{
+		this->xmlfile.parse<0>(&buffer[0]);
+	}
+	catch (const rapidxml::parse_error & e)
+	{
+		std::cerr << e.what() << " here: " << e.where < char >() << std::endl;
+		return;
+	}
+	this->currentphoto = xmlfile.first_node()->first_node();
 	print(cout, xmlfile, 0);
 	linefile++;
 }
@@ -229,4 +261,6 @@ void ReaderTXT::load(vector <Mat>& images) {
 }
 ReaderTXT::ReaderTXT(string path):Reader(path) {
 }
-ReaderTXT::ReaderTXT() {}
+ReaderTXT::ReaderTXT():Reader() {}
+ReaderTXT::ReaderTXT(ReaderTXT &rd):Reader(rd) {
+}

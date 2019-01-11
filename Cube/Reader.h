@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include <memory>
 #include <fstream>
 #include <rapidxml.hpp>
 #include <rapidxml_print.hpp>
@@ -11,11 +12,13 @@ class Reader
 public:
 	Reader();
 	Reader(string path);
+	Reader(Reader& rd);
 	virtual void load(vector <Mat>& images)=0;
 	static bool makeFoto(vector <Mat>& imeges);
 	static void gauss(Mat &imgIn, Mat &imgOut);
 	static void thresholding(Mat &imgIn, Mat &imgOut);
-	static Reader* open(string path);
+	static void open(string path, unique_ptr<Reader> &ptr);
+	Reader& operator= (Reader& rd);
 	~Reader();
 
 protected:
@@ -23,13 +26,14 @@ protected:
 	ifstream file;
 	unsigned int linefile;
 private:
-	void writeLog(string log, string type);
+	static void writeLog(string log, string type);
 
 };
 class ReaderXML :public Reader {
 public:
 	ReaderXML();
 	ReaderXML(string path);
+	ReaderXML(ReaderXML& rd);
 	void load(vector <Mat>& images);
 private:
 	vector<char> buffer;
@@ -40,6 +44,7 @@ class ReaderTXT :public Reader {
 public:
 	ReaderTXT();
 	ReaderTXT(string path);
+	ReaderTXT(ReaderTXT &rd);
 	void load(vector <Mat>& images);
 private:
 

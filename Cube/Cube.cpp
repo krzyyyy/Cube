@@ -1,5 +1,4 @@
 // Cube.cpp : Defines the entry point for the console application.
-//
 #include "stdafx.h"
 #include "Model.h"
 #include "Reader.h"
@@ -24,7 +23,7 @@ void dysplay(vector <Mat> imgs) {
 	}
 }
 
-int mains(int argc, char **argv) {
+int main(int argc, char **argv) {
 	string confpath;
 	Model m1;
 	vector <Mat> images;
@@ -34,10 +33,10 @@ int mains(int argc, char **argv) {
 	else
 		confpath = "defaultconfig.txt";
 	try {
-		reader = unique_ptr<Reader>(Reader::open("configuration.xml"));
+		Reader::open(confpath, reader);
 		while (images.size() < 6) {
 			try {
-				reader.get()->load(images);
+				reader->load(images);
 			}
 			catch (ImageFileException a) {
 				cout << a.getMessage();

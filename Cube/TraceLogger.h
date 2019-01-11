@@ -13,4 +13,5 @@ public:
 	static void addLog(string a);
 	static string toString();
 	static void complite();
+	static unsigned int getSize();
 };
