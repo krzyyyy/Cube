@@ -51,8 +51,12 @@ int main(int argc, char **argv) {
 				}
 				else if (choise == 2)
 					return -1;
-				else if (choise == 3 && images.empty()==false)
-					images.push_back(images[images.size()-1]);
+				else if (choise == 3) {
+					if (images.empty() == false)
+						images.push_back(images[images.size() - 1]);
+					else
+						cout << "nie da sie wczytac poprzedniego pliku\n";
+				}
 			}
 			catch (ImageModeException b) {
 				cout << b.getMessage();
@@ -92,5 +96,6 @@ int main(int argc, char **argv) {
 		m1.visiable_walls();
 		sign = m1.dysplay();
 	}
+	m1.~Model();
 	return 0;
 }

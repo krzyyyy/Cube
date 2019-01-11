@@ -6,6 +6,7 @@
 #include <memory>
 
 Reader::Reader(): linefile(0) {
+	int g = 0;
 }
 Reader::Reader(string path) : linefile(0) {
 	
@@ -28,7 +29,7 @@ void Reader::open(string path, unique_ptr<Reader> &ptr) {
 		//return unique_ptr<Reader>(make_unique<ReaderTXT>(ReaderTXT(path)));
 	}
 	else if (path.substr(path.length() - 4) == ".xml") {
-		ptr = move(make_unique<ReaderXML>(ReaderXML(path)));
+		ptr = make_unique<ReaderXML>(ReaderXML(path));
 	}
 	else {
 		throw ConfigurationFileException(path);
@@ -36,6 +37,7 @@ void Reader::open(string path, unique_ptr<Reader> &ptr) {
 }
 void Reader::writeLog(string log, string type) {
 	if (!log.empty()) {
+		cout << "\n-------------------------------\n";
 		cout << "Where do you want to write "+ type+" log?\n1. console\n2. file "+type+"log.txt\n";
 		int choice = 0;
 		cin >> choice;
@@ -64,7 +66,6 @@ Reader& Reader::operator=(Reader& rd) {
 }
 
 Reader::~Reader() {
-	cout << "Wychodzê z :" + confpath + "\n";
 	if (TraceLogger::getSize() > 1) {
 		writeLog(TraceLogger::toString(), "trace");
 		writeLog(ErrorLoger::getLog(), "error");
@@ -166,6 +167,7 @@ bool Reader::makeFoto(vector <Mat> &images) {
 	if (!cap.isOpened())
 		return false;
 	Mat frame;
+	cout << "nacisnij f aby zrobic zdjecie\n";
 	while (true) {
 		cap >> frame;
 		imshow("foto", frame);
@@ -173,17 +175,22 @@ bool Reader::makeFoto(vector <Mat> &images) {
 			break;
 
 	}
+	destroyAllWindows();
 	images.push_back(frame);
 	return true;
 }
 void ReaderXML::load(vector <Mat>& images) {
-	
-		while(currentphoto) {
+		//while(*currentphoto.get()) {
+		while (currentphoto) {
+		//string path = ((*currentphoto.get())->value());
 		string path = currentphoto->value();
 		string mode = "";
 		TraceLogger::addLog("Openning image named: " +path+" ... ");
+		//if ((*currentphoto.get())->first_attribute())
+			//mode = (*currentphoto.get())->first_attribute()->value();
 		if (currentphoto->first_attribute())
 			mode = currentphoto->first_attribute()->value();
+		//currentphoto = make_unique<rapidxml::xml_node<>*>((*currentphoto.get())->next_sibling());
 		currentphoto = currentphoto->next_sibling();
 		linefile++;
 		Mat temp = imread(path);
@@ -215,11 +222,29 @@ ReaderXML::ReaderXML(string path):Reader(path) {
 		std::cerr << e.what() << " here: " << e.where < char >() << std::endl;
 		return;
 	}
+	//this->currentphoto= make_unique<rapidxml::xml_node<>*>( xmlfile.first_node()->first_node());
 	currentphoto = xmlfile.first_node()->first_node();
 	print(cout, xmlfile, 0);
 	linefile++;
 }
 ReaderXML::ReaderXML(ReaderXML &rd):Reader(rd) {
+	buffer = vector<char>((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+	buffer.push_back('\0');
+	try
+	{
+		xmlfile.parse<0>(&buffer[0]);
+	}
+	catch (const rapidxml::parse_error & e)
+	{
+		std::cerr << e.what() << " here: " << e.where < char >() << std::endl;
+		return;
+	}
+	//this->currentphoto =make_unique<rapidxml::xml_node<>*>( this->xmlfile.first_node()->first_node());
+	currentphoto = xmlfile.first_node()->first_node();
+	print(cout, xmlfile, 0);
+	linefile++;
+}
+ReaderXML& ReaderXML:: operator= (ReaderXML& rd) {
 	this->buffer = rd.buffer;
 	try
 	{
@@ -228,11 +253,12 @@ ReaderXML::ReaderXML(ReaderXML &rd):Reader(rd) {
 	catch (const rapidxml::parse_error & e)
 	{
 		std::cerr << e.what() << " here: " << e.where < char >() << std::endl;
-		return;
+		return *this;
 	}
-	this->currentphoto = xmlfile.first_node()->first_node();
+	//this->currentphoto = this->xmlfile.first_node()->first_node();
 	print(cout, xmlfile, 0);
 	linefile++;
+	return *this;
 }
 
 void ReaderTXT::load(vector <Mat>& images) {
@@ -257,7 +283,7 @@ void ReaderTXT::load(vector <Mat>& images) {
 		TraceLogger::complite();
 	}
 	if (images.size() < 6)
-		throw TooShortConfigException(confpath, linefile);
+		throw TooShortConfigException(confpath, images.size());
 }
 ReaderTXT::ReaderTXT(string path):Reader(path) {
 }

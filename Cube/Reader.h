@@ -35,9 +35,11 @@ public:
 	ReaderXML(string path);
 	ReaderXML(ReaderXML& rd);
 	void load(vector <Mat>& images);
+	ReaderXML& operator= (ReaderXML& rd);
 private:
 	vector<char> buffer;
 	rapidxml::xml_document<> xmlfile;
+	//unique_ptr<rapidxml::xml_node<>*> currentphoto;
 	rapidxml::xml_node<>* currentphoto;
 };
 class ReaderTXT :public Reader {

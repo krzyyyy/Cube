@@ -44,6 +44,6 @@ TooShortConfigException::TooShortConfigException() {}
 TooShortConfigException::TooShortConfigException(string path, int len):
 	ConfigurationFileException(path) {
 	this->len=len;
-	string mess = "In " + path + " is: " + to_string(len) + "images. It's not enough.\n";
+	string mess = "In " + path + " is: " + to_string(len) + " images. It's not enough.\n";
 	this->putMess(mess);
 }
