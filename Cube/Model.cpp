@@ -27,7 +27,7 @@ Model::Model(vector <Mat> imgs):images(imgs), band({ -100, 100 }),
 		}
 	corner_points = vector<Vec2f>({ Vec2f(0,0),Vec2f(images[0].cols,0),// wierzcholki obrazow
 		Vec2f(0,images[0].rows),Vec2f(images[0].cols,images[0].rows) });
-	namedWindow("okno", WINDOW_NORMAL);
+	
 }
 void Model::key_handling(int sign) {
 	if (sign == 'p'&&trans[2]<-400)
@@ -93,7 +93,7 @@ void Model::visiable_walls() {
 		}
 	}
 }
-unsigned int Model::dysplay() {
+void Model::dysplay(Mat &imgout) {
 	Mat img(400, 400, CV_8UC3, Scalar(0, 0, 0));
 	for (auto id : indexes_good) {// wyswietlanie widocznych obrazow
 		vector <Vec2f> wall_points(4);
@@ -103,10 +103,19 @@ unsigned int Model::dysplay() {
 		Mat temp;
 		warpPerspective(images[id], temp, mat_transf, Size(img.rows, img.cols));//transformacja obrazu
 		add(temp, img, img);
-
 	}
-	imshow("okno", img);
-	return waitKey(0);
+	img.copyTo(imgout);
+}
+void Model::myvconnect(Mat &img1, Mat &img2, Mat &imgout) {
+	namedWindow("okno", WINDOW_NORMAL);
+	Mat img1copy, img2copy;
+	img1.copyTo(img1copy);
+	img2.copyTo(img2copy);
+
+	unsigned int sg = 0;
+	img1copy(Rect(0, 0, img1copy.cols - 40, img1copy.rows - 1)).copyTo(img1copy);
+	img2copy(Rect(1, 0, img2copy.cols - 1, img2copy.rows - 1)).copyTo(img2copy);
+	hconcat(img1copy, img2copy, imgout);
 }
 Model::~Model() {
 	destroyAllWindows();

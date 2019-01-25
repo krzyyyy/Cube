@@ -17,6 +17,7 @@ using namespace cv;
 //funkcje kolejno rotacji punktów 3d, obliczania œrodkow ka¿dej ze scian i obslugi przyciskow
 void dysplay(vector <Mat> imgs) {
 	namedWindow("win", WINDOW_NORMAL);
+	namedWindow("res", WINDOW_NORMAL);
 	for (auto &img : imgs) {
 		imshow("win", img);
 		waitKey(0);
@@ -24,8 +25,10 @@ void dysplay(vector <Mat> imgs) {
 }
 
 int main(int argc, char **argv) {
+	namedWindow("okno", WINDOW_NORMAL);
+	namedWindow("okno2", WINDOW_NORMAL);
 	string confpath;
-	Model m1;
+	Model m1, m2;
 	vector <Mat> images;
 	unique_ptr <Reader> reader;
 	if (argc > 1)
@@ -87,14 +90,28 @@ int main(int argc, char **argv) {
 	}
 
 
-	unsigned int sign=0;
+	unsigned int sign=0, sign2=0;
 	m1 = Model(images);
+	m2 = Model(images);
 	while (sign != 27) {
 		m1.key_handling(sign);
 		m1.mul();
 		m1.mean();
 		m1.visiable_walls();
-		sign = m1.dysplay();
+		m2.key_handling(sign2);
+		m2.mul();
+		m2.mean();
+		m2.visiable_walls();
+		Mat img;
+		Mat img2, res;
+		m1.dysplay(img);
+		m2.dysplay(img2);
+		imshow("okno", img);
+		imshow("okno2", img2);
+		sign = waitKey(0);
+		sign2 = waitKey(0);
+		Model::myvconnect(img, img2, res);
+		imshow("res", res);
 	}
 	m1.~Model();
 	return 0;

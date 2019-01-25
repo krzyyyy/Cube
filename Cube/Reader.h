@@ -2,8 +2,8 @@
 #include "stdafx.h"
 #include <memory>
 #include <fstream>
-#include <rapidxml.hpp>
-#include <rapidxml_print.hpp>
+#include "rapidxml-1.13\rapidxml.hpp"
+#include "rapidxml-1.13\rapidxml_print.hpp"
 using namespace std;
 using namespace cv;
 

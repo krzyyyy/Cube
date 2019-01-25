@@ -30,6 +30,7 @@ public:
 	void mul();
 	void mean();
 	void visiable_walls();
-	unsigned int dysplay();
+	void dysplay(Mat &imgout);
+	void static myvconnect(Mat &img1, Mat &img2, Mat &imgout);
 };
 
