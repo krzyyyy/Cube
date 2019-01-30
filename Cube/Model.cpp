@@ -29,6 +29,10 @@ Model::Model(vector <Mat> imgs):images(imgs), band({ -100, 100 }),
 		Vec2f(0,images[0].rows),Vec2f(images[0].cols,images[0].rows) });
 	
 }
+Model::Model(vector <Mat> imgs, Vec3f rot_vec):Model(imgs){
+	this->rot_vec = rot_vec;
+	mul();
+}
 void Model::key_handling(int sign) {
 	if (sign == 'p'&&trans[2]<-400)
 		trans[2] += 2;
@@ -94,11 +98,11 @@ void Model::visiable_walls() {
 	}
 }
 void Model::dysplay(Mat &imgout) {
-	Mat img(400, 400, CV_8UC3, Scalar(0, 0, 0));
+	Mat img(800, 800, CV_8UC3, Scalar(0, 0, 0));
 	for (auto id : indexes_good) {// wyswietlanie widocznych obrazow
 		vector <Vec2f> wall_points(4);
 		generate(wall_points.begin(), wall_points.end(),//generowanie punktow 2d
-			[id, n = 0, this]()mutable{return points_2d[id_img_points[id][n++]] + Vec2f(200, 200); });
+			[id, n = 0, this]()mutable{return points_2d[id_img_points[id][n++]] + Vec2f(400, 400); });
 		Mat mat_transf = getPerspectiveTransform(corner_points, wall_points);//obliczanie macierzy transformacji
 		Mat temp;
 		warpPerspective(images[id], temp, mat_transf, Size(img.rows, img.cols));//transformacja obrazu
@@ -113,10 +117,15 @@ void Model::myvconnect(Mat &img1, Mat &img2, Mat &imgout) {
 	img2.copyTo(img2copy);
 
 	unsigned int sg = 0;
-	img1copy(Rect(0, 0, img1copy.cols - 40, img1copy.rows - 1)).copyTo(img1copy);
+	img1copy(Rect(0, 0, img1copy.cols - 240, img1copy.rows - 1)).copyTo(img1copy);
 	img2copy(Rect(1, 0, img2copy.cols - 1, img2copy.rows - 1)).copyTo(img2copy);
 	hconcat(img1copy, img2copy, imgout);
 }
 Model::~Model() {
 	destroyAllWindows();
+}
+void Model::setPosition(Point2d pos) {
+	center = pos;
+	camera_matrix = (Mat_<double>(3, 3) << focal_length, 0, center.x,
+		0, focal_length, center.y, 0, 0, 1);
 }

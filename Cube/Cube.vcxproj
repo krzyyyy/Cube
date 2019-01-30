@@ -220,7 +220,9 @@
   <ItemGroup>
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="SensorStream.h" />
     <ClInclude Include="Reader.h" />
+    <ClInclude Include="Server.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TraceLogger.h" />
@@ -231,7 +233,9 @@
     </ClCompile>
     <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="SensorStream.cpp" />
     <ClCompile Include="Reader.cpp" />
+    <ClCompile Include="Server.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='test|Win32'">Create</PrecompiledHeader>

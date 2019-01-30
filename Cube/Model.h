@@ -25,6 +25,7 @@ private:
 public:
 	Model();
 	Model(vector <Mat> imgs);
+	Model(vector <Mat> imgs, Vec3f rot_vec);
 	~Model();
 	void key_handling(int sign);
 	void mul();
@@ -32,5 +33,6 @@ public:
 	void visiable_walls();
 	void dysplay(Mat &imgout);
 	void static myvconnect(Mat &img1, Mat &img2, Mat &imgout);
+	void setPosition(Point2d pos);
 };
 

@@ -5,6 +5,7 @@
 #include "Exceptions.h"
 #include "TraceLogger.h"
 #include "Catch\Catch.h"
+#include "Server.h"
 #include <memory>
 
 
@@ -12,8 +13,8 @@
 
 
 
-using namespace std;
-using namespace cv;
+//using namespace std;
+//using namespace cv::;
 //funkcje kolejno rotacji punktów 3d, obliczania œrodkow ka¿dej ze scian i obslugi przyciskow
 void dysplay(vector <Mat> imgs) {
 	namedWindow("win", WINDOW_NORMAL);
@@ -23,10 +24,13 @@ void dysplay(vector <Mat> imgs) {
 		waitKey(0);
 	}
 }
-
 int main(int argc, char **argv) {
+	
 	namedWindow("okno", WINDOW_NORMAL);
 	namedWindow("okno2", WINDOW_NORMAL);
+	Server serv;
+	String aa;
+	serv.reciveData(aa);
 	string confpath;
 	Model m1, m2;
 	vector <Mat> images;
@@ -89,11 +93,11 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-
 	unsigned int sign=0, sign2=0;
-	m1 = Model(images);
-	m2 = Model(images);
+	m1 = Model(images, Vec3f(0.4, 0.4, 0));
+	m2 = Model(images, Vec3f(0.6, 0.6, 0));
 	while (sign != 27) {
+
 		m1.key_handling(sign);
 		m1.mul();
 		m1.mean();
@@ -108,8 +112,8 @@ int main(int argc, char **argv) {
 		m2.dysplay(img2);
 		imshow("okno", img);
 		imshow("okno2", img2);
-		sign = waitKey(0);
-		sign2 = waitKey(0);
+		sign = waitKey(1);
+		sign2 = waitKey(1);
 		Model::myvconnect(img, img2, res);
 		imshow("res", res);
 	}
