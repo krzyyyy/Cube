@@ -62,13 +62,13 @@
     <ClCompile Include="TraceLogger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SensorStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

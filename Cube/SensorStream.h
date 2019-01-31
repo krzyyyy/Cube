@@ -12,14 +12,12 @@ using namespace cv;
 class SensorStream
 {
 public:
-	SensorStream(string path);
-	void loadReading(vector <double> &score);
+	SensorStream();
+	void loadReading(vector <double> &score, string measurement);
 	~SensorStream();
-
 private:
 	void getData(string data, vector <vector<double>> &data2);
 	ifstream file;
-	string path;
 	vector <vector<double>> data2;
 };
 

@@ -9,7 +9,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include "targetver.h"
-#include<winsock2.h>
+#include <winsock2.h>
 
 
 

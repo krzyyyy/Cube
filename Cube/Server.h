@@ -4,8 +4,8 @@
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
 #define BUFLEN 512	//Max length of buffer
-#define PORT 5000	//The port on which to listen for incoming data
 
+#define PORT 5000	//The port on which to listen for incoming data
 
 class Server {
 private:
@@ -16,7 +16,7 @@ private:
 	WSADATA wsa;
 public:
 	Server();
-	void reciveData(std::string data);
+	void reciveData(std::string &data);
 	~Server();
 
 };

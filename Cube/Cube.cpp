@@ -6,7 +6,9 @@
 #include "TraceLogger.h"
 #include "Catch\Catch.h"
 #include "Server.h"
+#include "SensorStream.h"
 #include <memory>
+#include <mutex>
 
 
 
@@ -28,9 +30,11 @@ int main(int argc, char **argv) {
 	
 	namedWindow("okno", WINDOW_NORMAL);
 	namedWindow("okno2", WINDOW_NORMAL);
+	SensorStream sensors;
+	std::mutex mutex;
 	Server serv;
 	String aa;
-	serv.reciveData(aa);
+	std::thread t1(&Server::reciveData, serv, std::ref(aa));
 	string confpath;
 	Model m1, m2;
 	vector <Mat> images;
@@ -94,10 +98,16 @@ int main(int argc, char **argv) {
 	}
 
 	unsigned int sign=0, sign2=0;
+	vector <double> wyniki;
 	m1 = Model(images, Vec3f(0.4, 0.4, 0));
 	m2 = Model(images, Vec3f(0.6, 0.6, 0));
 	while (sign != 27) {
-
+		//cout << "Main: " << aa << endl;
+		mutex.lock();
+		sensors.loadReading(wyniki, aa);
+		mutex.unlock();
+		m1.setPosition(Point2d( wyniki[1], wyniki[0]));
+		m2.setPosition(Point2d(wyniki[1], wyniki[0]));
 		m1.key_handling(sign);
 		m1.mul();
 		m1.mean();
@@ -117,6 +127,7 @@ int main(int argc, char **argv) {
 		Model::myvconnect(img, img2, res);
 		imshow("res", res);
 	}
+	t1.join();
 	m1.~Model();
 	return 0;
 }
