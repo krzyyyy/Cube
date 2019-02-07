@@ -13,6 +13,7 @@ class SensorStream
 {
 public:
 	SensorStream();
+	void visualisationPosition(vector<double> pos, Mat &imgout);
 	void loadReading(vector <double> &score, string measurement);
 	~SensorStream();
 private:

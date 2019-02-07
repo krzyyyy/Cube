@@ -34,5 +34,6 @@ public:
 	void dysplay(Mat &imgout);
 	void static myvconnect(Mat &img1, Mat &img2, Mat &imgout);
 	void setPosition(Point2d pos);
+	void setRot(Vec3f rot_vec);
 };
 

@@ -15,6 +15,7 @@
 
 
 
+
 //using namespace std;
 //using namespace cv::;
 //funkcje kolejno rotacji punktów 3d, obliczania œrodkow ka¿dej ze scian i obslugi przyciskow
@@ -27,7 +28,7 @@ void dysplay(vector <Mat> imgs) {
 	}
 }
 int main(int argc, char **argv) {
-	
+	auto poprzednia = std::chrono::steady_clock::now();
 	namedWindow("okno", WINDOW_NORMAL);
 	namedWindow("okno2", WINDOW_NORMAL);
 	SensorStream sensors;
@@ -100,24 +101,33 @@ int main(int argc, char **argv) {
 	unsigned int sign=0, sign2=0;
 	vector <double> wyniki;
 	m1 = Model(images, Vec3f(0.4, 0.4, 0));
-	m2 = Model(images, Vec3f(0.6, 0.6, 0));
+	m2 = Model(images, Vec3f(0.55, 0.53, 0));
 	while (sign != 27) {
+		//auto start = std::chrono::steady_clock::now();
+		//auto time = start - poprzednia;
+		//cout << time.count() << endl;
+		//cout << chrono::duration_cast<chrono::milliseconds>(time).count() << endl;
 		//cout << "Main: " << aa << endl;
+		Mat img2, res;
 		mutex.lock();
 		sensors.loadReading(wyniki, aa);
 		mutex.unlock();
-		m1.setPosition(Point2d( wyniki[1], wyniki[0]));
-		m2.setPosition(Point2d(wyniki[1], wyniki[0]));
-		m1.key_handling(sign);
+		//sensors.visualisationPosition(wyniki, res);
+		
+		m1.setPosition(Point2d( wyniki[1]/2, wyniki[0]/2));
+		m2.setPosition(Point2d(wyniki[1]/2, wyniki[0]/2));
+		//m1.key_handling(sign);
+		m1.setRot(Vec3f(0.01, 0.00, 0));
 		m1.mul();
 		m1.mean();
 		m1.visiable_walls();
-		m2.key_handling(sign2);
+		//m2.key_handling(sign2);
+		m2.setRot(Vec3f(0.01, 0.00, 0));
 		m2.mul();
 		m2.mean();
 		m2.visiable_walls();
 		Mat img;
-		Mat img2, res;
+		
 		m1.dysplay(img);
 		m2.dysplay(img2);
 		imshow("okno", img);
@@ -125,7 +135,10 @@ int main(int argc, char **argv) {
 		sign = waitKey(1);
 		sign2 = waitKey(1);
 		Model::myvconnect(img, img2, res);
+		
 		imshow("res", res);
+		waitKey(10);
+		//poprzednia = start;
 	}
 	t1.join();
 	m1.~Model();

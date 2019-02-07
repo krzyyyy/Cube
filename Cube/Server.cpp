@@ -8,7 +8,7 @@
 
 Server::Server() {
 	slen = sizeof(si_other);
-
+	
 	//Initialise winsock
 	printf("\nInitialising Winsock...");
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
